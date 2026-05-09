@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>崇左音乐节 · 艺人礼遇</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   CSS VARIABLES
+═══════════════════════════════════════════ */
+:root {
+  --bg:        #080B14;
+  --bg2:       #0F1320;
+  --bg3:       #171C2E;
+  --bg4:       #1E2438;
+  --gold:      #C9A84C;
+  --gold-lt:   #E5C97A;
+  --gold-dim:  rgba(201,168,76,0.12);
+  --gold-dim2: rgba(201,168,76,0.06);
+  --text:      #EAE4D8;
+  --text-dim:  #8A8070;
+  --text-mid:  #B8B0A0;
+  --border:    rgba(201,168,76,0.22);
+  --border2:   rgba(255,255,255,0.06);
+  --red:       #D95E5E;
+  --green:     #4DBD74;
+  --blue:      #5B9BD5;
+  --r:         10px;
+  --r-lg:      16px;
+  --serif:     'Noto Serif SC', 'Songti SC', serif;
+  --sans:      'Noto Sans SC', 'PingFang SC', sans-serif;
+  --shadow:    0 4px 24px rgba(0,0,0,0.5);
+}
+
+/* ═══════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.65;
+  font-size:14px;
+}
+button{font-family:var(--sans)}
+a{color:inherit;text-decoration:none}
+
+/* ═══════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════ */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.25);border-radius:3px}
+
+/* ═══════════════════════════════════════════
+   LOADING
+═══════════════════════════════════════════ */
+#loadingScreen{
+  position:fixed;inset:0;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  z-index:9999;gap:18px;
+  transition:opacity 0.4s;
+}
+#loadingScreen.hide{opacity:0;pointer-events:none}
+.spinner{
+  width:44px;height:44px;
+  border:3px solid var(--gold-dim);
+  border-top-color:var(--gold);
+  border-radius:50%;
+  animation:spin 0.75s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-text{color:var(--text-dim);font-size:13px;letter-spacing:0.05em}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+#toastBox{
+  position:fixed;top:20px;right:20px;
+  z-index:9990;
+  display:flex;flex-direction:column;gap:10px;
+  pointer-events:none;
+}
+.toast{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:11px 18px;
+  font-size:13px;
+  color:var(--text);
+  box-shadow:var(--shadow);
+  animation:toastIn 0.3s ease forwards;
+  display:flex;align-items:center;gap:10px;
+  max-width:320px;
+  pointer-events:auto;
+}
+.toast.ok {border-color:var(--green)}
+.toast.err{border-color:var(--red)}
+.toast.info{border-color:var(--blue)}
+.toast-icon{font-size:15px;flex-shrink:0}
+@keyframes toastIn{from{transform:translateX(110%);opacity:0}to{transform:none;opacity:1}}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+.hdr{
+  background:rgba(8,11,20,0.92);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:500;
+  padding:0 20px;
+}
+.hdr-inner{
+  max-width:1280px;margin:0 auto;
+  display:flex;align-items:center;gap:14px;
+  height:64px;flex-wrap:nowrap;
+}
+.hdr-brand{flex:1;min-width:0}
+.hdr-brand h1{
+  font-family:var(--serif);
+  font-size:clamp(15px,2.5vw,22px);
+  color:var(--gold);
+  letter-spacing:0.04em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.hdr-brand p{
+  font-size:11px;color:var(--text-dim);
+  letter-spacing:0.06em;margin-top:1px;
+}
+/* 标题可编辑 */
+.title-editable{
+  cursor:text;border-radius:4px;
+  padding:1px 4px;margin:-1px -4px;
+  transition:background 0.15s,box-shadow 0.15s;
+  outline:none;display:inline-block;max-width:100%;
+}
+.title-editable:hover{background:rgba(201,168,76,0.1);}
+.title-editable:focus{background:rgba(201,168,76,0.15);box-shadow:0 1px 0 var(--gold);}
+.title-edit-hint{
+  font-size:10px;color:rgba(201,168,76,0.4);
+  margin-left:5px;letter-spacing:0;
+  font-family:var(--sans);vertical-align:middle;
+  pointer-events:none;transition:opacity 0.2s;
+}
+.sync-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:20px;padding:5px 13px;
+  font-size:11px;color:var(--text-dim);
+  white-space:nowrap;flex-shrink:0;
+  cursor:default;
+}
+.sync-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);flex-shrink:0;
+  transition:background 0.3s;
+}
+.sync-dot.syncing{animation:pulse 1.5s infinite}
+.sync-dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.2}}
+.hdr-btns{display:flex;gap:8px;flex-shrink:0}
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;gap:5px;
+  border:none;cursor:pointer;
+  border-radius:8px;
+  font-size:13px;font-weight:500;
+  padding:8px 16px;
+  transition:all 0.18s;
+  white-space:nowrap;
+  font-family:var(--sans);
+}
+.btn-gold{
+  background:linear-gradient(135deg,#D4AF5C,#A8842E);
+  color:#1A1000;font-weight:700;
+}
+.btn-gold:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-gold:active{transform:none}
+.btn-outline{
+  background:transparent;color:var(--gold);
+  border:1px solid var(--border);
+}
+.btn-outline:hover{background:var(--gold-dim)}
+.btn-ghost{
+  background:transparent;color:var(--text-mid);
+  border:1px solid var(--border2);
+}
+.btn-ghost:hover{background:var(--border2);color:var(--text)}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:7px}
+.btn-icon{
+  background:none;border:none;cursor:pointer;
+  color:var(--text-dim);padding:5px;border-radius:6px;
+  font-size:14px;transition:all 0.15s;line-height:1;
+  font-family:var(--sans);
+}
+.btn-icon:hover{color:var(--red);background:rgba(217,94,94,0.1)}
+.btn-danger{background:var(--red);color:#fff;border:none}
+.btn-danger:hover{filter:brightness(1.1)}
+
+/* ═══════════════════════════════════════════
+   MAIN
+═══════════════════════════════════════════ */
+.main{
+  max-width:1280px;margin:0 auto;
+  padding:32px 24px 80px;
+}
+
+/* ═══════════════════════════════════════════
+   DAY BLOCK
+═══════════════════════════════════════════ */
+.day-block{margin-bottom:56px}
+.day-hdr{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:24px;
+}
+.day-pill{
+  font-family:var(--serif);font-size:18px;font-weight:700;
+  color:var(--gold);
+  background:var(--gold-dim);
+  border:1px solid var(--border);
+  border-radius:30px;
+  padding:7px 22px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.day-line{
+  flex:1;height:1px;
+  background:linear-gradient(90deg,var(--border),transparent);
+}
+.day-acts{display:flex;gap:6px;align-items:center}
+
+/* ═══════════════════════════════════════════
+   SECTION LABEL
+═══════════════════════════════════════════ */
+.sec-label{
+  font-size:12px;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--gold);
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:14px;
+}
+.sec-label::after{
+  content:'';flex:1;height:1px;
+  background:var(--border);
+}
+
+/* ═══════════════════════════════════════════
+   ADD ROW BUTTON
+═══════════════════════════════════════════ */
+.add-row{
+  width:100%;padding:9px;
+  background:none;
+  border:1px dashed rgba(201,168,76,0.25);
+  border-radius:var(--r);
+  color:var(--text-dim);cursor:pointer;
+  font-size:13px;font-family:var(--sans);
+  transition:all 0.18s;margin-top:8px;
+}
+.add-row:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim2)}
+
+/* ═══════════════════════════════════════════
+   TRANSFER TABLE (DESKTOP)
+═══════════════════════════════════════════ */
+.tbl-wrap{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  overflow-x:auto;
+  margin-bottom:12px;
+}
+.tbl{
+  width:100%;border-collapse:collapse;
+  min-width:820px;
+  font-size:13px;
+}
+.tbl th{
+  background:rgba(201,168,76,0.1);
+  color:var(--gold-lt);
+  font-weight:500;font-size:12px;
+  padding:11px 13px;
+  text-align:left;
+  border-bottom:1px solid var(--border);
+  white-space:nowrap;
+  letter-spacing:0.02em;
+}
+.tbl td{
+  padding:10px 13px;
+  border-bottom:1px solid var(--border2);
+  vertical-align:middle;
+  color:var(--text);
+}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,0.015)}
+.tbl .td-time{font-family:var(--serif);color:var(--gold-lt);font-weight:600;white-space:nowrap}
+.tbl .td-tag{
+  display:inline-block;
+  background:var(--gold-dim);
+  color:var(--gold);border-radius:20px;
+  padding:2px 10px;font-size:11px;
+  white-space:nowrap;
+}
+.td-phone{
+  color:var(--gold);cursor:pointer;
+  text-decoration:none;display:inline-block;
+}
+.td-phone:hover{text-decoration:underline}
+
+/* ═══════════════════════════════════════════
+   CONTENTEDITABLE
+═══════════════════════════════════════════ */
+[contenteditable]{
+  outline:none;border-radius:4px;
+  padding:1px 3px;
+  transition:background 0.12s,box-shadow 0.12s;
+  cursor:text;
+  min-width:16px;display:inline-block;
+}
+[contenteditable]:empty::before{
+  content:attr(data-ph);
+  color:var(--text-dim);opacity:0.5;
+}
+[contenteditable]:hover{background:rgba(255,255,255,0.04)}
+[contenteditable]:focus{
+  background:rgba(201,168,76,0.1);
+  box-shadow:0 1px 0 var(--gold);
+}
+
+/* ═══════════════════════════════════════════
+   TEAM GRID
+═══════════════════════════════════════════ */
+.team-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:18px;
+  margin-bottom:12px;
+}
+.team-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+}
+.tc-head{
+  background:linear-gradient(135deg,rgba(201,168,76,0.12),rgba(201,168,76,0.04));
+  border-bottom:1px solid var(--border);
+  padding:13px 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.tc-name{
+  font-family:var(--serif);font-size:15px;
+  font-weight:700;color:var(--gold-lt);
+}
+.tc-count{
+  font-size:11px;color:var(--text-dim);
+  background:var(--bg4);border-radius:20px;
+  padding:3px 10px;white-space:nowrap;flex-shrink:0;
+}
+.tc-body{padding:14px 16px}
+.tc-row{
+  display:flex;gap:8px;
+  margin-bottom:9px;font-size:13px;
+}
+.tc-row:last-child{margin-bottom:0}
+.tc-lbl{
+  color:var(--text-dim);
+  min-width:48px;flex-shrink:0;
+  font-size:12px;padding-top:2px;
+}
+.tc-val{color:var(--text);word-break:break-all;flex:1}
+
+/* ═══════════════════════════════════════════
+   MOBILE CARDS (TRANSFER)
+═══════════════════════════════════════════ */
+.m-cards{display:none;flex-direction:column;gap:12px;margin-bottom:12px}
+.m-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+}
+.m-card-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:13px 15px 10px;
+  border-bottom:1px solid var(--border2);
+  gap:10px;
+}
+.m-time{
+  font-family:var(--serif);
+  font-size:24px;font-weight:700;
+  color:var(--gold);line-height:1;
+}
+.m-artist{font-size:15px;font-weight:600;margin-top:4px}
+.m-tag{
+  font-size:11px;color:var(--gold);
+  background:var(--gold-dim);
+  border-radius:20px;padding:3px 10px;
+  white-space:nowrap;margin-top:2px;
+}
+.m-body{padding:12px 15px}
+.m-row{
+  display:flex;gap:8px;margin-bottom:8px;
+  font-size:13px;align-items:baseline;
+}
+.m-row:last-child{margin-bottom:0}
+.m-lbl{color:var(--text-dim);font-size:12px;min-width:42px;flex-shrink:0}
+.m-val{color:var(--text)}
+.m-edit-btn{
+  background:var(--bg4);border:1px solid var(--border);
+  color:var(--gold);border-radius:7px;
+  padding:5px 12px;font-size:12px;cursor:pointer;
+  font-family:var(--sans);transition:all 0.15s;
+  white-space:nowrap;flex-shrink:0;
+}
+.m-edit-btn:hover{background:var(--gold-dim)}
+
+/* ═══════════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════════ */
+.empty{
+  text-align:center;padding:28px 20px;
+  color:var(--text-dim);font-size:13px;
+  border:1px dashed var(--border);
+  border-radius:var(--r);
+}
+
+/* ═══════════════════════════════════════════
+   MODAL BACKDROP
+═══════════════════════════════════════════ */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.72);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;
+  animation:fadeIn 0.2s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.overlay.hide{display:none!important}
+.modal{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:26px;
+  width:100%;max-width:480px;
+  max-height:88vh;overflow-y:auto;
+  box-shadow:var(--shadow);
+  animation:slideUp 0.25s ease;
+}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+.modal-sm{max-width:360px}
+.modal h3{
+  font-family:var(--serif);
+  font-size:17px;color:var(--gold);
+  margin-bottom:20px;
+}
+.modal-actions{
+  display:flex;gap:10px;justify-content:flex-end;
+  margin-top:22px;flex-wrap:wrap;
+}
+.confirm-txt{color:var(--text-dim);font-size:14px;margin-bottom:20px;line-height:1.6}
+
+/* ═══════════════════════════════════════════
+   FORM
+═══════════════════════════════════════════ */
+.fg{margin-bottom:14px}
+.fg label{
+  display:block;font-size:11px;
+  color:var(--text-dim);margin-bottom:6px;
+  letter-spacing:0.04em;
+}
+.fi{
+  width:100%;
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  border-radius:8px;
+  color:var(--text);
+  font-family:var(--sans);font-size:13px;
+  padding:9px 13px;outline:none;
+  transition:border-color 0.15s;
+}
+.fi:focus{border-color:var(--gold)}
+.fg-row{display:flex;gap:10px}
+.fg-row .fg{flex:1}
+
+/* ═══════════════════════════════════════════
+   EMPTY MAIN
+═══════════════════════════════════════════ */
+.empty-main{
+  text-align:center;padding:80px 20px;
+  color:var(--text-dim);
+}
+.empty-main h2{
+  font-family:var(--serif);
+  color:var(--gold);font-size:20px;
+  margin-bottom:12px;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE: TABLET
+═══════════════════════════════════════════ */
+@media(max-width:1024px){
+  .team-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE: MOBILE  ≤ 768px
+═══════════════════════════════════════════ */
+@media(max-width:768px){
+  /* Header */
+  .hdr{padding:0 14px}
+  .hdr-inner{height:56px;gap:10px}
+  .hdr-brand h1{font-size:15px}
+  .hdr-brand p{display:none}
+  .sync-pill{display:none}/* space saver on mobile */
+  .btn{padding:7px 13px;font-size:12px}
+
+  /* Main */
+  .main{padding:20px 14px 80px}
+
+  /* Day header */
+  .day-pill{font-size:16px;padding:6px 18px}
+  .day-acts .btn-ghost{display:none}/* hide inline add btns on mobile */
+
+  /* Hide desktop table, show mobile cards */
+  .tbl-wrap{display:none!important}
+  .m-cards{display:flex!important}
+
+  /* Teams: single column */
+  .team-grid{grid-template-columns:1fr}
+}
+
+/* ═══════════════════════════════════════════
+   FIXED MOBILE FAB (Floating Action Button)
+═══════════════════════════════════════════ */
+.fab{
+  position:fixed;bottom:22px;right:18px;
+  display:none;
+  z-index:600;
+  background:linear-gradient(135deg,#D4AF5C,#A8842E);
+  color:#1A1000;font-weight:700;
+  border:none;cursor:pointer;
+  border-radius:16px;
+  padding:13px 20px;font-size:14px;
+  font-family:var(--sans);
+  box-shadow:0 6px 24px rgba(0,0,0,0.5);
+  transition:all 0.18s;
+  align-items:center;gap:8px;
+}
+.fab:active{transform:scale(0.96)}
+@media(max-width:768px){.fab{display:flex}}
+
+/* ═══════════════════════════════════════════
+   PRINT / PDF
+═══════════════════════════════════════════ */
+@media print{
+  @page{size:A4 landscape;margin:12mm 14mm}
+
+  *{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+    color-adjust:exact!important;
+  }
+
+  /* Hide UI chrome */
+  .hdr,.fab,#toastBox,#loadingScreen,
+  .add-row,.btn-icon,.hdr-btns,
+  .day-acts .btn,.m-edit-btn,
+  .sync-pill,.title-edit-hint{display:none!important}
+
+  /* Reset body */
+  body{
+    background:#fff!important;
+    color:#1A1A1A!important;
+    font-size:10pt!important;
+    line-height:1.55!important;
+  }
+
+  /* Main padding */
+  .main{padding:0!important;max-width:100%!important}
+
+  /* 动态标题（由 JS 写入） */
+  #printHeader{
+    display:block!important;
+    font-family:'Noto Serif SC',serif;
+    font-size:16pt;font-weight:700;
+    color:#8B6914;text-align:center;
+    padding-bottom:8pt;
+    border-bottom:2pt solid #C9A84C;
+    margin-bottom:16pt;
+  }
+
+  /* 强制显示桌面表格（手机打印时 max-width:768px 媒体查询会把它隐藏） */
+  .tbl-wrap{display:block!important;
+    border:1pt solid #C9A84C!important;
+    border-radius:0!important;
+    overflow:visible!important;
+    background:#fff!important;
+    margin-bottom:0!important;
+    page-break-inside:avoid;
+  }
+  /* 隐藏手机卡片 */
+  .m-cards{display:none!important}
+
+  /* Day block - avoid page break in short blocks */
+  .day-block{
+    margin-bottom:18pt;
+    page-break-inside:auto;
+  }
+  .day-hdr{margin-bottom:10pt}
+  .day-pill{
+    font-size:13pt!important;
+    background:#C9A84C!important;
+    color:#fff!important;
+    border:none!important;
+    padding:5pt 16pt!important;
+    border-radius:20pt!important;
+  }
+  .day-line{background:#C9A84C!important}
+
+  /* Section label */
+  .sec-label{
+    font-size:9pt!important;
+    color:#8B6914!important;
+    margin-bottom:6pt!important;
+    margin-top:8pt!important;
+  }
+  .sec-label::after{background:#D4AF5C!important}
+
+  /* Table: reset overflow, allow wrap */
+  .tbl-wrap{
+    border:1pt solid #C9A84C!important;
+    border-radius:0!important;
+    overflow:visible!important;
+    background:#fff!important;
+    margin-bottom:0!important;
+    page-break-inside:avoid;
+  }
+  .tbl{
+    min-width:0!important;width:100%!important;
+    font-size:8.5pt!important;
+    table-layout:fixed;
+  }
+  .tbl colgroup{display:none}
+  /* 列宽分配（横向A4，共9列去掉删除按钮） */
+  .tbl th:nth-child(1){width:7%}   /* 时间 */
+  .tbl th:nth-child(2){width:11%}  /* 艺人/团队 */
+  .tbl th:nth-child(3){width:7%}   /* 类型 */
+  .tbl th:nth-child(4){width:22%}  /* 行程 */
+  .tbl th:nth-child(5){width:8%}   /* 车辆 */
+  .tbl th:nth-child(6){width:8%}   /* 乘车人 */
+  .tbl th:nth-child(7){width:10%}  /* 车牌 */
+  .tbl th:nth-child(8){width:14%}  /* 司机/电话 */
+  .tbl th:nth-child(9){width:13%}  /* 备注 */
+  .tbl th:nth-child(10){width:0;padding:0;border:none!important} /* 删除按钮列隐藏 */
+  .tbl th{
+    background:#C9A84C!important;
+    color:#fff!important;
+    font-size:8.5pt!important;
+    padding:5pt 7pt!important;
+    white-space:nowrap;
+    border:none!important;
+    border-right:0.5pt solid rgba(255,255,255,0.3)!important;
+  }
+  .tbl td{
+    color:#1A1A1A!important;
+    padding:5pt 7pt!important;
+    border-bottom:0.5pt solid #E8DCC8!important;
+    border-right:0.5pt solid #EDE5D5!important;
+    word-break:break-all;
+    overflow-wrap:break-word;
+    vertical-align:top;
+    font-size:9pt!important;
+  }
+  .tbl tr{page-break-inside:avoid}
+  .td-tag{
+    background:#F5EDD5!important;
+    color:#8B6914!important;
+    font-size:8pt!important;
+    padding:1pt 6pt!important;
+    border-radius:10pt!important;
+  }
+  .td-phone,.td-phone *{color:#3366BB!important}
+  .tbl .td-time{color:#8B6914!important}
+
+  /* Mobile table: hide on print */
+  .m-cards{display:none!important}
+
+  /* Team grid: 2 columns on A4 */
+  .team-grid{
+    grid-template-columns:1fr 1fr!important;
+    gap:8pt!important;
+    margin-bottom:0!important;
+  }
+  .team-card{
+    border:1pt solid #C9A84C!important;
+    border-radius:6pt!important;
+    background:#fff!important;
+    page-break-inside:avoid;
+    break-inside:avoid;
+  }
+  .tc-head{
+    background:#F5EDD5!important;
+    border-bottom:1pt solid #C9A84C!important;
+    padding:6pt 10pt!important;
+  }
+  .tc-name{color:#8B6914!important;font-size:11pt!important}
+  .tc-count{
+    background:#EDE5D5!important;color:#8B6914!important;
+    font-size:8pt!important;padding:2pt 8pt!important;
+  }
+  .tc-body{padding:8pt 10pt!important}
+  .tc-row{
+    font-size:9pt!important;
+    margin-bottom:5pt!important;
+    word-break:keep-all;
+    overflow-wrap:break-word;
+  }
+  .tc-lbl{color:#666!important;font-size:8.5pt!important}
+  .tc-val{color:#1A1A1A!important}
+
+  /* Contenteditable: remove highlight */
+  [contenteditable]{
+    background:transparent!important;
+    box-shadow:none!important;
+    padding:0!important;
+  }
+  /* Hide drag handles on print */
+  .drag-handle { display:none!important; }
+  .drag-handle-tbl { display:none!important; }
+}
+
+/* ═══════════════════════════════════════════
+   TBL-MODULE WRAPPER (for corner drag handle)
+═══════════════════════════════════════════ */
+.tbl-module {
+  position: relative;
+  margin-bottom: 12px;
+}
+/* tbl-wrap inside tbl-module: its own margin handled by tbl-module */
+.tbl-module > .tbl-wrap {
+  margin-bottom: 0;
+}
+/* Absolute drag handle pinned to top-right corner of tbl-module */
+.drag-handle-tbl {
+  position: absolute;
+  top: 10px;
+  right: 11px;
+  z-index: 6;
+}
+
+/* ═══════════════════════════════════════════
+   DRAG HANDLE BUTTON
+═══════════════════════════════════════════ */
+.drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: rgba(201,168,76,0.07);
+  border: 1px solid rgba(201,168,76,0.25);
+  border-radius: 7px;
+  color: rgba(201,168,76,0.5);
+  cursor: grab;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  letter-spacing: -1px;
+  padding: 0;
+  font-family: var(--sans);
+}
+.drag-handle:hover {
+  background: rgba(201,168,76,0.16);
+  color: var(--gold);
+  border-color: rgba(201,168,76,0.48);
+  transform: scale(1.08);
+}
+.drag-handle:active { cursor: grabbing; transform: scale(0.96); }
+.drag-handle-sm {
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+/* Drag states */
+.day-block.is-dragging {
+  opacity: 0.38;
+  transform: scale(0.985);
+  transition: opacity 0.1s, transform 0.1s;
+}
+.team-card.is-dragging {
+  opacity: 0.35;
+  transform: scale(0.96);
+  transition: opacity 0.1s, transform 0.1s;
+}
+.day-block.drag-over-top {
+  box-shadow: 0 -3px 0 0 var(--gold);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+.day-block.drag-over-bottom {
+  box-shadow: 0 3px 0 0 var(--gold);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+.team-card.drag-over {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 1px var(--gold), inset 0 0 0 1px rgba(201,168,76,0.15);
+}
+.team-grid.grid-drag-over {
+  outline: 2px dashed rgba(201,168,76,0.45);
+  outline-offset: 6px;
+  border-radius: var(--r-lg);
+  background: rgba(201,168,76,0.03);
+}
+.team-card.drag-insert-before {
+  box-shadow: -4px 0 0 0 var(--gold), 0 0 0 1px rgba(201,168,76,0.3);
+  border-color: rgba(201,168,76,0.55) !important;
+}
+.team-card.drag-insert-after {
+  box-shadow: 4px 0 0 0 var(--gold), 0 0 0 1px rgba(201,168,76,0.3);
+  border-color: rgba(201,168,76,0.55) !important;
+}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loadingScreen">
+  <div class="spinner"></div>
+  <div class="load-text">正在加载最新数据…</div>
+</div>
+
+<!-- Toast -->
+<div id="toastBox"></div>
+
+<!-- Header -->
+<header class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-brand">
+      <h1><span id="titleMain" class="title-editable" contenteditable="true" spellcheck="false" title="点击修改活动名称">崇左音乐节 · 艺人礼遇</span><span class="title-edit-hint">✎</span></h1>
+      <p><span id="titleSub" class="title-editable" contenteditable="true" spellcheck="false" title="点击修改副标题">VERTEX MANAGEMENT · 内部调度文件</span></p>
+    </div>
+    <div class="sync-pill">
+      <span class="sync-dot syncing" id="syncDot"></span>
+      <span id="syncTxt">同步中…</span>
+    </div>
+    <div class="hdr-btns">
+      <button class="btn btn-ghost btn-sm" onclick="showAddDay()">＋ 日期</button>
+      <button class="btn btn-outline btn-sm" onclick="doPrint()">↓ PDF</button>
+      <button class="btn btn-gold btn-sm" onclick="doSave()">保存</button>
+    </div>
+  </div>
+</header>
+
+<!-- 打印专用标题（屏幕隐藏，打印时显示） -->
+<div id="printHeader" style="display:none"></div>
+
+<!-- Main content -->
+<main class="main" id="mainArea"></main>
+
+<!-- Mobile FAB -->
+<button class="fab" onclick="showAddDay()">＋ 新增日期</button>
+
+<!-- ════════════════ OVERLAYS ════════════════ -->
+
+<!-- Confirm delete -->
+<div class="overlay hide" id="confirmOverlay" onclick="overlayClick(this,'confirmOverlay')">
+  <div class="modal modal-sm">
+    <h3>确认删除</h3>
+    <p class="confirm-txt" id="confirmTxt">确定要删除吗？此操作无法撤销。</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="hideModal('confirmOverlay')">取消</button>
+      <button class="btn btn-danger" id="confirmOk">删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add day -->
+<div class="overlay hide" id="addDayOverlay" onclick="overlayClick(this,'addDayOverlay')">
+  <div class="modal modal-sm">
+    <h3>新增演出日期</h3>
+    <div class="fg">
+      <label>日期名称（例：6月12日 星期四）</label>
+      <input class="fi" id="newDayInput" placeholder="6月12日 星期四">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="hideModal('addDayOverlay')">取消</button>
+      <button class="btn btn-gold" onclick="confirmAddDay()">添加</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit transfer (mobile) -->
+<div class="overlay hide" id="editTrOverlay" onclick="overlayClick(this,'editTrOverlay')">
+  <div class="modal">
+    <h3>编辑接送记录</h3>
+    <input type="hidden" id="et_dayId">
+    <input type="hidden" id="et_rowId">
+    <div class="fg-row">
+      <div class="fg"><label>时间</label><input class="fi" id="et_time" placeholder="09:55"></div>
+      <div class="fg"><label>类型</label><input class="fi" id="et_type" placeholder="接机 / 接站 / 送机"></div>
+    </div>
+    <div class="fg"><label>艺人 / 团队名称</label><input class="fi" id="et_artist" placeholder="阿梨粤团队"></div>
+    <div class="fg"><label>行程</label><input class="fi" id="et_flight" placeholder="航班/车次 · 出发地 → 目的地"></div>
+    <div class="fg-row">
+      <div class="fg"><label>车辆</label><input class="fi" id="et_vehicle" placeholder="车辆"></div>
+      <div class="fg"><label>乘车人</label><input class="fi" id="et_passengers" placeholder="乘车人"></div>
+    </div>
+    <div class="fg"><label>车牌号</label><input class="fi" id="et_plate" placeholder="桂AFV2396"></div>
+    <div class="fg-row">
+      <div class="fg"><label>司机姓名</label><input class="fi" id="et_driver" placeholder="韦师傅"></div>
+      <div class="fg"><label>司机电话</label><input class="fi" id="et_phone" placeholder="13800138000" type="tel"></div>
+    </div>
+    <div class="fg"><label>备注</label><input class="fi" id="et_note" placeholder="（选填）"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="hideModal('editTrOverlay')">取消</button>
+      <button class="btn btn-gold" onclick="saveTransferModal()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit team (mobile) -->
+<div class="overlay hide" id="editTeamOverlay" onclick="overlayClick(this,'editTeamOverlay')">
+  <div class="modal">
+    <h3>编辑艺人团队</h3>
+    <input type="hidden" id="em_dayId">
+    <input type="hidden" id="em_rowId">
+    <div class="fg-row">
+      <div class="fg"><label>团队名称</label><input class="fi" id="em_name" placeholder="阿梨粤团队"></div>
+      <div class="fg"><label>人数</label><input class="fi" id="em_count" placeholder="共4人"></div>
+    </div>
+    <div class="fg-row">
+      <div class="fg"><label>住宿酒店</label><input class="fi" id="em_hotel" placeholder="星程酒店"></div>
+      <div class="fg"><label>房型</label><input class="fi" id="em_room" placeholder="标间×2"></div>
+    </div>
+    <div class="fg-row">
+      <div class="fg"><label>入住日期</label><input class="fi" id="em_in" placeholder="6月12日"></div>
+      <div class="fg"><label>退房日期</label><input class="fi" id="em_out" placeholder="6月14日"></div>
+    </div>
+    <div class="fg"><label>演出安排</label><input class="fi" id="em_perf" placeholder="6月13日 21:00 主舞台"></div>
+    <div class="fg-row">
+      <div class="fg"><label>联系人</label><input class="fi" id="em_cname" placeholder="经纪人张三"></div>
+      <div class="fg"><label>联系电话</label><input class="fi" id="em_cphone" placeholder="13900139000" type="tel"></div>
+    </div>
+    <div class="fg"><label>备注 / 特殊需求</label><input class="fi" id="em_notes" placeholder="（选填）"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="hideModal('editTeamOverlay')">取消</button>
+      <button class="btn btn-gold" onclick="saveTeamModal()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ══════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════ */
+const API   = '/api/data';
+const SYNC_INTERVAL = 30000; // 30s auto-refresh
+
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+let DB = { days: [], lastUpdated: null };
+let _confirmCb = null;
+let _isMobile = () => window.innerWidth <= 768;
+let _syncTimer = null;
+
+/* ══════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════ */
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+
+function toast(msg, type='ok') {
+  const d = document.createElement('div');
+  d.className = `toast ${type}`;
+  const icons = {ok:'✓', err:'✕', info:'↺'};
+  d.innerHTML = `<span class="toast-icon">${icons[type]||'·'}</span><span>${msg}</span>`;
+  document.getElementById('toastBox').prepend(d);
+  setTimeout(()=>{ d.style.transition='opacity 0.3s'; d.style.opacity='0'; setTimeout(()=>d.remove(),320); }, 2800);
+}
+
+let _onlineTimer = null;
+function setSyncState(state, ts) {
+  const dot = document.getElementById('syncDot');
+  const txt = document.getElementById('syncTxt');
+  dot.className = 'sync-dot';
+  clearTimeout(_onlineTimer);
+  if (state === 'saved') {
+    txt.textContent = '保存成功';
+    // 3秒后恢复显示"在线"
+    _onlineTimer = setTimeout(() => setSyncState('ok'), 3000);
+  } else if (state === 'ok') {
+    txt.textContent = '在线';
+  } else if (state === 'syncing') {
+    dot.classList.add('syncing');
+    txt.textContent = '同步中…';
+  } else {
+    dot.classList.add('error');
+    txt.textContent = '离线缓存';
+  }
+}
+
+/* ══════════════════════════════════════════════
+   API
+══════════════════════════════════════════════ */
+async function loadData(silent=false) {
+  if (!silent) setSyncState('syncing');
+  try {
+    const r = await fetch(API + '?_=' + Date.now());
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    const changed = d.lastUpdated !== DB.lastUpdated;
+    DB = d;
+    if (!silent || changed) renderAll();
+    if (changed && silent) toast('内容已更新', 'info');
+    setSyncState('ok');
+    localStorage.setItem('festivalDB', JSON.stringify(DB));
+  } catch(e) {
+    const cached = localStorage.getItem('festivalDB');
+    if (cached) { DB = JSON.parse(cached); renderAll(); }
+    setSyncState('err');
+  }
+  document.getElementById('loadingScreen').classList.add('hide');
+  setTimeout(()=>document.getElementById('loadingScreen').style.display='none', 400);
+}
+
+async function doSave() {
+  collectDesktop();
+  DB.lastUpdated = null; // will be set by server
+  localStorage.setItem('festivalDB', JSON.stringify(DB));
+  setSyncState('syncing');
+  try {
+    const r = await fetch(API, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(DB)
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const res = await r.json();
+    DB.lastUpdated = res.lastUpdated;
+    setSyncState('saved');
+    toast('保存成功', 'ok');
+  } catch(e) {
+    setSyncState('err');
+  }
+}
+
+/* ══════════════════════════════════════════════
+   COLLECT CONTENTEDITABLE (DESKTOP)
+══════════════════════════════════════════════ */
+function collectDesktop() {
+  // 收集标题
+  const t1 = document.getElementById('titleMain');
+  const t2 = document.getElementById('titleSub');
+  if (t1) DB.title    = t1.innerText.trim() || DB.title || '活动名称';
+  if (t2) DB.subtitle = t2.innerText.trim() || DB.subtitle || '内部调度文件';
+  // 同步浏览器标签
+  document.title = DB.title;
+  // 收集内容区域字段
+  document.querySelectorAll('[data-f]').forEach(el => {
+    const { d: dayId, r: rowId, f: field, t: type } = el.dataset;
+    const val = el.innerText.trim();
+    const day = DB.days.find(x=>x.id===dayId);
+    if (!day) return;
+    if (type==='day') { day[field] = val; return; }
+    const arr = type==='tr' ? day.transfers : day.teams;
+    const row = arr.find(x=>x.id===rowId);
+    if (row) row[field] = val;
+  });
+}
+
+/* ══════════════════════════════════════════════
+   RENDER
+══════════════════════════════════════════════ */
+function renderAll() {
+  // 同步标题栏显示
+  const t1 = document.getElementById('titleMain');
+  const t2 = document.getElementById('titleSub');
+  if (t1 && DB.title    && document.activeElement !== t1) t1.innerText = DB.title;
+  if (t2 && DB.subtitle && document.activeElement !== t2) t2.innerText = DB.subtitle;
+  if (DB.title) document.title = DB.title;
+  // 渲染内容
+  const el = document.getElementById('mainArea');
+  if (!DB.days || !DB.days.length) {
+    el.innerHTML = `<div class="empty-main">
+      <h2>${esc(DB.title||'活动名称')}</h2>
+      <p>暂无日程安排，点击右上角"＋ 日期"开始添加</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = DB.days.map(renderDay).join('');
+  initDragDrop();
+}
+
+function renderDay(day) {
+  return `<div class="day-block" id="blk-${day.id}" data-dayid="${day.id}">
+  <div class="day-hdr">
+    <div class="day-pill"><span data-f="label" data-d="${day.id}" data-t="day" contenteditable="true" spellcheck="false" data-ph="日期">${esc(day.label)}</span></div>
+    <div class="day-line"></div>
+    <div class="day-acts">
+      <button class="btn btn-ghost btn-sm" onclick="addTransfer('${day.id}')">＋ 接送</button>
+      <button class="btn btn-ghost btn-sm" onclick="addTeam('${day.id}')">＋ 团队</button>
+      <button class="btn-icon" title="删除此日期" onclick="askDelete('确定删除「${esc(day.label)}」整个日期吗？所有数据将清除。', ()=>deleteDay('${day.id}'))">🗑</button>
+    </div>
+  </div>
+
+  <div class="sec-label">🚗 &nbsp;<span data-f="transferLabel" data-d="${day.id}" data-t="day" contenteditable="true" spellcheck="false" data-ph="接送安排">${esc(day.transferLabel||'接送安排')}</span></div>
+  <div class="tbl-module" data-dayid="${day.id}">
+    ${renderTbl(day)}
+    ${renderMCards(day)}
+    <button class="drag-handle drag-handle-tbl" data-drag="day" data-id="${day.id}" title="按住拖动以调整日期模块顺序">⠿</button>
+  </div>
+  <button class="add-row" onclick="addTransfer('${day.id}')">＋ 添加行程</button>
+
+  <div class="sec-label" style="margin-top:28px">🎤 &nbsp;艺人团队</div>
+  <div class="team-grid" data-dayid="${day.id}">${day.teams.map(t=>renderTeam(day.id,t)).join('')}</div>
+  <button class="add-row" onclick="addTeam('${day.id}')">＋ 添加艺人团队</button>
+</div>`;
+}
+
+/* --- Desktop Transfer Table --- */
+function renderTbl(day) {
+  const rows = (day.transfers||[]).map(t=>`<tr>
+  <td class="td-time"><span data-f="time" data-d="${day.id}" data-r="${t.id}" data-t="tr" contenteditable="true" spellcheck="false" data-ph="时间">${esc(t.time)}</span></td>
+  <td><span data-f="artistName" data-d="${day.id}" data-r="${t.id}" data-t="tr" contenteditable="true" spellcheck="false" data-ph="艺人">${esc(t.artistName)}</span></td>
+  <td><span class="td-tag"><span data-f="type" data-d="${day.id}" data-r="${t.id}" data-t="tr" contenteditable="true" spellcheck="false" data-ph="类型">${esc(t.type)}</span></span></td>
+  <td><span data-f="flightTrain" data-d="${day.id}" data-r="${t.id}" data-t="tr" contenteditable="true" spellcheck="false" data-ph="航班/车次 · 出发地 → 目的地">${esc(t.flightTrain)}</span></td>
+  <td><span data-f="vehicle" data-d="${day.id}" data-r="${t.id}" data-t="tr" contenteditable="true" spellcheck="false" data-ph="车辆">${esc(t.vehicle)}</span></td>
+  <td><span data-f="passengers" data-d="${day.id}" data-r="${t.id}" data-t="tr" contenteditable="true" spellcheck="false" data-ph="乘车人">${esc(t.passengers)}</span></td>
+  <td><span data-f="plateNumber" data-d="${day.id}" data-r="${t.id}" data-t="tr" contenteditable="true" spellcheck="false" data-ph="车牌">${esc(t.plateNumber)}</span></td>
+  <td>
+    <span data-f="driverName" data-d="${day.id}" data-r="${t.id}" data-t="tr" contenteditable="true" spellcheck="false" data-ph="司机">${esc(t.driverName)}</span><br>
+    <span class="td-phone" onclick="copyTel('${esc(t.driverPhone)}')" title="点击复制电话">
+      <span data-f="driverPhone" data-d="${day.id}" data-r="${t.id}" data-t="tr" contenteditable="true" spellcheck="false" data-ph="电话">${esc(t.driverPhone)}</span>
+    </span>
+  </td>
+  <td><span data-f="remarks" data-d="${day.id}" data-r="${t.id}" data-t="tr" contenteditable="true" spellcheck="false" data-ph="备注">${esc(t.remarks)}</span></td>
+  <td><button class="btn-icon" onclick="askDelete('删除此接送记录？',()=>deleteTransfer('${day.id}','${t.id}'))">✕</button></td>
+</tr>`).join('');
+
+  return `<div class="tbl-wrap"><table class="tbl">
+  <thead><tr>
+    <th>时间</th><th>艺人/团队</th><th>类型</th><th>行程</th>
+    <th>车辆</th><th>乘车人</th><th>车牌</th><th>司机/电话</th><th>备注</th><th style="width:30px"></th>
+  </tr></thead>
+  <tbody>${rows||`<tr><td colspan="10" class="empty">暂无接送记录</td></tr>`}</tbody>
+</table></div>`;
+}
+
+/* --- Mobile Transfer Cards --- */
+function renderMCards(day) {
+  if (!day.transfers || !day.transfers.length) {
+    return `<div class="m-cards"><div class="empty">暂无接送记录</div></div>`;
+  }
+  const cards = day.transfers.map(t=>`<div class="m-card">
+  <div class="m-card-head">
+    <div>
+      <div class="m-time">${esc(t.time)||'--'}</div>
+      <div class="m-artist">${esc(t.artistName)||'(艺人名称)'}</div>
+      <div class="m-tag">${esc(t.type)||'接送'}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+      <button class="m-edit-btn" onclick="openEditTr('${day.id}','${t.id}')">编辑</button>
+      <button class="btn-icon" onclick="askDelete('删除此记录？',()=>deleteTransfer('${day.id}','${t.id}'))">✕</button>
+    </div>
+  </div>
+  <div class="m-body">
+    ${t.flightTrain?`<div class="m-row"><span class="m-lbl">航班</span><span class="m-val">${esc(t.flightTrain)}</span></div>`:''}
+    <div class="m-row"><span class="m-lbl">路线</span><span class="m-val">${esc(t.pickup)||'—'} → ${esc(t.dropoff)||'—'}</span></div>
+    ${t.plateNumber?`<div class="m-row"><span class="m-lbl">车牌</span><span class="m-val">${esc(t.plateNumber)}</span></div>`:''}
+    ${t.driverName||t.driverPhone?`<div class="m-row"><span class="m-lbl">司机</span><span class="m-val">${esc(t.driverName)}&nbsp;
+      ${t.driverPhone?`<a href="tel:${esc(t.driverPhone)}" class="td-phone">${esc(t.driverPhone)}</a>`:''}</span></div>`:''}
+    ${t.remarks?`<div class="m-row"><span class="m-lbl">备注</span><span class="m-val">${esc(t.remarks)}</span></div>`:''}
+  </div>
+</div>`).join('');
+  return `<div class="m-cards">${cards}</div>`;
+}
+
+/* --- Team Card --- */
+function renderTeam(dayId, t) {
+  const field = (f,ph) => `<span data-f="${f}" data-d="${dayId}" data-r="${t.id}" data-t="tm" contenteditable="true" spellcheck="false" data-ph="${ph}">${esc(t[f])}</span>`;
+  return `<div class="team-card" data-dayid="${dayId}" data-teamid="${t.id}">
+  <div class="tc-head">
+    <span class="tc-name">${field('name','团队名称')}</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="tc-count">${field('count','人数')}</span>
+      <button class="drag-handle drag-handle-sm" data-drag="team" data-id="${t.id}" data-dayid="${dayId}" title="按住拖动以调整团队顺序">⠿</button>
+      <button class="btn-icon" onclick="askDelete('删除团队「${esc(t.name)}」？',()=>deleteTeam('${dayId}','${t.id}'))">✕</button>
+    </div>
+  </div>
+  <div class="tc-body">
+    <div class="tc-row"><span class="tc-lbl">🏨 住宿</span><span class="tc-val">${field('hotel','酒店名称')}</span></div>
+    <div class="tc-row"><span class="tc-lbl">🛏 房型</span><span class="tc-val">${field('room','标间×2')}</span></div>
+    <div class="tc-row"><span class="tc-lbl">📅 入住</span><span class="tc-val">${field('checkin','6月12日')}</span></div>
+    <div class="tc-row"><span class="tc-lbl">📅 退房</span><span class="tc-val">${field('checkout','6月14日')}</span></div>
+    <div class="tc-row"><span class="tc-lbl">🎤 演出</span><span class="tc-val">${field('performance','6月13日 21:00')}</span></div>
+    <div class="tc-row"><span class="tc-lbl">📞 联系</span>
+      <span class="tc-val">${field('contactName','联系人')}&nbsp;
+        <span class="td-phone" onclick="copyTel('${esc(t.contactPhone)}')">${field('contactPhone','电话')}</span>
+      </span>
+    </div>
+    <div class="tc-row"><span class="tc-lbl">📝 备注</span><span class="tc-val">${field('notes','特殊需求')}</span></div>
+    <!-- Mobile edit button -->
+    <div style="margin-top:12px;display:none" class="m-team-edit">
+      <button class="m-edit-btn" style="width:100%" onclick="openEditTeam('${dayId}','${t.id}')">编辑此团队</button>
+    </div>
+  </div>
+</div>`;
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ══════════════════════════════════════════════
+   CRUD
+══════════════════════════════════════════════ */
+function addDay() { /* alias */ showAddDay(); }
+
+function showAddDay() {
+  document.getElementById('newDayInput').value = '';
+  showModal('addDayOverlay');
+  setTimeout(()=>document.getElementById('newDayInput').focus(), 150);
+}
+
+function confirmAddDay() {
+  const label = document.getElementById('newDayInput').value.trim();
+  if (!label) { toast('请输入日期名称','err'); return; }
+  collectDesktop();
+  DB.days.push({ id:uid(), label, transfers:[], teams:[] });
+  renderAll();
+  hideModal('addDayOverlay');
+  toast('日期已添加，记得点击保存', 'info');
+}
+
+function addTransfer(dayId) {
+  collectDesktop();
+  const day = DB.days.find(d=>d.id===dayId);
+  if (!day) return;
+  const t = { id:uid(), time:'', artistName:'', type:'接机', flightTrain:'',
+               pickup:'', dropoff:'', plateNumber:'', driverName:'', driverPhone:'', remarks:'' };
+  day.transfers.push(t);
+  renderAll();
+  if (_isMobile()) openEditTr(dayId, t.id);
+}
+
+function addTeam(dayId) {
+  collectDesktop();
+  const day = DB.days.find(d=>d.id===dayId);
+  if (!day) return;
+  const t = { id:uid(), name:'新团队', count:'', hotel:'', room:'', checkin:'',
+               checkout:'', performance:'', contactName:'', contactPhone:'', notes:'' };
+  day.teams.push(t);
+  renderAll();
+  if (_isMobile()) openEditTeam(dayId, t.id);
+}
+
+function deleteDay(dayId) {
+  collectDesktop();
+  DB.days = DB.days.filter(d=>d.id!==dayId);
+  renderAll(); toast('日期已删除，记得保存','info');
+}
+
+function deleteTransfer(dayId, id) {
+  collectDesktop();
+  const day = DB.days.find(d=>d.id===dayId);
+  if (day) day.transfers = day.transfers.filter(t=>t.id!==id);
+  renderAll();
+}
+
+function deleteTeam(dayId, id) {
+  collectDesktop();
+  const day = DB.days.find(d=>d.id===dayId);
+  if (day) day.teams = day.teams.filter(t=>t.id!==id);
+  renderAll();
+}
+
+/* ══════════════════════════════════════════════
+   MOBILE EDIT MODALS
+══════════════════════════════════════════════ */
+function openEditTr(dayId, rowId) {
+  const day = DB.days.find(d=>d.id===dayId);
+  const t = day && day.transfers.find(r=>r.id===rowId);
+  if (!t) return;
+  document.getElementById('et_dayId').value = dayId;
+  document.getElementById('et_rowId').value = rowId;
+  const f = (id,val) => document.getElementById(id).value = val||'';
+  f('et_time',t.time); f('et_type',t.type); f('et_artist',t.artistName);
+  f('et_flight',t.flightTrain); f('et_vehicle',t.vehicle); f('et_passengers',t.passengers);
+  f('et_plate',t.plateNumber); f('et_driver',t.driverName);
+  f('et_phone',t.driverPhone); f('et_note',t.remarks);
+  showModal('editTrOverlay');
+}
+
+function saveTransferModal() {
+  const dayId = document.getElementById('et_dayId').value;
+  const rowId = document.getElementById('et_rowId').value;
+  const day = DB.days.find(d=>d.id===dayId);
+  const t = day && day.transfers.find(r=>r.id===rowId);
+  if (!t) return;
+  const g = id => document.getElementById(id).value.trim();
+  t.time=g('et_time'); t.type=g('et_type')||'接机'; t.artistName=g('et_artist');
+  t.flightTrain=g('et_flight'); t.vehicle=g('et_vehicle'); t.passengers=g('et_passengers');
+  t.plateNumber=g('et_plate'); t.driverName=g('et_driver');
+  t.driverPhone=g('et_phone'); t.remarks=g('et_note');
+  renderAll();
+  hideModal('editTrOverlay');
+  toast('记录已更新，记得保存','info');
+}
+
+function openEditTeam(dayId, rowId) {
+  const day = DB.days.find(d=>d.id===dayId);
+  const t = day && day.teams.find(r=>r.id===rowId);
+  if (!t) return;
+  document.getElementById('em_dayId').value = dayId;
+  document.getElementById('em_rowId').value = rowId;
+  const f = (id,val) => document.getElementById(id).value = val||'';
+  f('em_name',t.name); f('em_count',t.count); f('em_hotel',t.hotel);
+  f('em_room',t.room); f('em_in',t.checkin); f('em_out',t.checkout);
+  f('em_perf',t.performance); f('em_cname',t.contactName);
+  f('em_cphone',t.contactPhone); f('em_notes',t.notes);
+  showModal('editTeamOverlay');
+}
+
+function saveTeamModal() {
+  const dayId = document.getElementById('em_dayId').value;
+  const rowId = document.getElementById('em_rowId').value;
+  const day = DB.days.find(d=>d.id===dayId);
+  const t = day && day.teams.find(r=>r.id===rowId);
+  if (!t) return;
+  const g = id => document.getElementById(id).value.trim();
+  t.name=g('em_name')||'新团队'; t.count=g('em_count'); t.hotel=g('em_hotel');
+  t.room=g('em_room'); t.checkin=g('em_in'); t.checkout=g('em_out');
+  t.performance=g('em_perf'); t.contactName=g('em_cname');
+  t.contactPhone=g('em_cphone'); t.notes=g('em_notes');
+  renderAll();
+  hideModal('editTeamOverlay');
+  toast('团队已更新，记得保存','info');
+}
+
+/* ══════════════════════════════════════════════
+   MODAL HELPERS
+══════════════════════════════════════════════ */
+function showModal(id) { document.getElementById(id).classList.remove('hide'); }
+function hideModal(id) { document.getElementById(id).classList.add('hide'); }
+function overlayClick(el, id) { if (el===event.target) hideModal(id); }
+
+function askDelete(msg, cb) {
+  document.getElementById('confirmTxt').textContent = msg;
+  _confirmCb = cb;
+  document.getElementById('confirmOk').onclick = () => { _confirmCb&&_confirmCb(); hideModal('confirmOverlay'); };
+  showModal('confirmOverlay');
+}
+
+/* ══════════════════════════════════════════════
+   COPY PHONE
+══════════════════════════════════════════════ */
+function copyTel(phone) {
+  if (!phone) return;
+  navigator.clipboard.writeText(phone)
+    .then(()=>toast('已复制：'+phone,'ok'))
+    .catch(()=>{ /* fallback */ prompt('复制电话号码：',phone); });
+}
+
+/* ══════════════════════════════════════════════
+   PDF
+══════════════════════════════════════════════ */
+function doPrint() {
+  collectDesktop();
+  const ph = document.getElementById('printHeader');
+  if (ph) ph.textContent = (DB.title||'活动名称') + ' · ' + (DB.subtitle||'内部调度文件');
+  // 手机端提示用浏览器打印
+  const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+  if (isMobile) {
+    toast('请点击浏览器菜单 → 打印/分享 → 保存为PDF', 'info');
+    setTimeout(()=>window.print(), 600);
+  } else {
+    setTimeout(()=>window.print(), 80);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   KEYBOARD
+══════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && e.key==='s') { e.preventDefault(); doSave(); }
+  if (e.key==='Escape') {
+    ['confirmOverlay','addDayOverlay','editTrOverlay','editTeamOverlay'].forEach(hideModal);
+  }
+});
+
+/* ══════════════════════════════════════════════
+   DRAG & DROP — DAY-BLOCK + TEAM-CARD (CROSS-DAY)
+══════════════════════════════════════════════ */
+function initDragDrop() {
+
+  /* ────────────────────────────────────────
+     Day-block reorder (via tbl-module handle)
+  ──────────────────────────────────────────*/
+  let _dayDragSrc = null;
+
+  document.querySelectorAll('[data-drag="day"]').forEach(btn => {
+    btn.addEventListener('mousedown', () => {
+      const blk = btn.closest('.day-block');
+      if (blk) blk.setAttribute('draggable', 'true');
+    });
+    btn.addEventListener('mouseup', () => {
+      const blk = btn.closest('.day-block');
+      if (blk) blk.setAttribute('draggable', 'false');
+    });
+    btn.addEventListener('touchstart', () => {
+      const blk = btn.closest('.day-block');
+      if (blk) blk.setAttribute('draggable', 'true');
+    }, { passive: true });
+  });
+
+  document.querySelectorAll('.day-block').forEach(blk => {
+    blk.addEventListener('dragstart', e => {
+      if (!blk.getAttribute('draggable') || blk.getAttribute('draggable') === 'false') return;
+      _dayDragSrc = blk.dataset.dayid;
+      blk.classList.add('is-dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', _dayDragSrc);
+    });
+    blk.addEventListener('dragend', () => {
+      blk.classList.remove('is-dragging');
+      blk.setAttribute('draggable', 'false');
+      document.querySelectorAll('.day-block').forEach(b =>
+        b.classList.remove('drag-over-top', 'drag-over-bottom'));
+      _dayDragSrc = null;
+    });
+    blk.addEventListener('dragover', e => {
+      if (!_dayDragSrc) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const rect = blk.getBoundingClientRect();
+      blk.classList.remove('drag-over-top', 'drag-over-bottom');
+      blk.classList.add(e.clientY < rect.top + rect.height / 2 ? 'drag-over-top' : 'drag-over-bottom');
+    });
+    blk.addEventListener('dragleave', e => {
+      if (!blk.contains(e.relatedTarget))
+        blk.classList.remove('drag-over-top', 'drag-over-bottom');
+    });
+    blk.addEventListener('drop', e => {
+      e.preventDefault();
+      const srcId = e.dataTransfer.getData('text/plain');
+      const tgtId = blk.dataset.dayid;
+      if (!srcId || srcId === tgtId) return;
+      collectDesktop();
+      const srcIdx = DB.days.findIndex(d => d.id === srcId);
+      const tgtIdx = DB.days.findIndex(d => d.id === tgtId);
+      if (srcIdx < 0 || tgtIdx < 0) return;
+      const rect = blk.getBoundingClientRect();
+      const before = e.clientY < rect.top + rect.height / 2;
+      const [removed] = DB.days.splice(srcIdx, 1);
+      const newTgt = DB.days.findIndex(d => d.id === tgtId);
+      DB.days.splice(before ? newTgt : newTgt + 1, 0, removed);
+      renderAll();
+      toast('日期顺序已调整，记得点击保存', 'info');
+    });
+  });
+
+  /* ────────────────────────────────────────
+     Team-card reorder — freely across all days
+  ──────────────────────────────────────────*/
+  let _teamDragSrc = null;  // team id being dragged
+  let _teamDragDay = null;  // source day id
+
+  // Helper: clean all team drag visual states
+  function clearTeamDragUI() {
+    document.querySelectorAll('.team-card').forEach(c =>
+      c.classList.remove('drag-over', 'drag-insert-before', 'drag-insert-after'));
+    document.querySelectorAll('.team-grid').forEach(g =>
+      g.classList.remove('grid-drag-over'));
+  }
+
+  // Activate draggable only while handle is held
+  document.querySelectorAll('[data-drag="team"]').forEach(btn => {
+    btn.addEventListener('mousedown', e => {
+      e.stopPropagation();
+      const card = btn.closest('.team-card');
+      if (card) card.setAttribute('draggable', 'true');
+    });
+    btn.addEventListener('mouseup', () => {
+      const card = btn.closest('.team-card');
+      if (card) card.setAttribute('draggable', 'false');
+    });
+  });
+
+  document.querySelectorAll('.team-card').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      if (!card.getAttribute('draggable') || card.getAttribute('draggable') === 'false') {
+        e.preventDefault(); return;
+      }
+      _teamDragSrc = card.dataset.teamid;
+      _teamDragDay = card.dataset.dayid;
+      // Use a slight delay so the ghost image renders before fading
+      requestAnimationFrame(() => card.classList.add('is-dragging'));
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/team', _teamDragSrc + '|' + _teamDragDay);
+      e.stopPropagation();
+    });
+
+    card.addEventListener('dragend', () => {
+      card.classList.remove('is-dragging');
+      card.setAttribute('draggable', 'false');
+      clearTeamDragUI();
+      _teamDragSrc = null;
+      _teamDragDay = null;
+    });
+
+    card.addEventListener('dragover', e => {
+      if (!_teamDragSrc || card.dataset.teamid === _teamDragSrc) return;
+      e.preventDefault();
+      e.stopPropagation();
+      e.dataTransfer.dropEffect = 'move';
+      clearTeamDragUI();
+      // Left/right half determines insert-before or insert-after
+      const rect = card.getBoundingClientRect();
+      const insertBefore = e.clientX < rect.left + rect.width / 2;
+      card.classList.add(insertBefore ? 'drag-insert-before' : 'drag-insert-after');
+    });
+
+    card.addEventListener('dragleave', e => {
+      if (!card.contains(e.relatedTarget))
+        card.classList.remove('drag-over', 'drag-insert-before', 'drag-insert-after');
+    });
+
+    card.addEventListener('drop', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const raw = e.dataTransfer.getData('text/team');
+      if (!raw) return;
+      const [srcId, srcDayId] = raw.split('|');
+      const tgtId    = card.dataset.teamid;
+      const tgtDayId = card.dataset.dayid;
+      if (srcId === tgtId) return;
+
+      const rect = card.getBoundingClientRect();
+      const insertBefore = e.clientX < rect.left + rect.width / 2;
+
+      collectDesktop();
+
+      // Remove from source day
+      const srcDay = DB.days.find(d => d.id === srcDayId);
+      if (!srcDay) return;
+      const si = srcDay.teams.findIndex(t => t.id === srcId);
+      if (si < 0) return;
+      const [moved] = srcDay.teams.splice(si, 1);
+
+      // Insert into target day
+      const tgtDay = DB.days.find(d => d.id === tgtDayId);
+      if (!tgtDay) return;
+      const ti = tgtDay.teams.findIndex(t => t.id === tgtId);
+      if (ti < 0) {
+        tgtDay.teams.push(moved);
+      } else {
+        tgtDay.teams.splice(insertBefore ? ti : ti + 1, 0, moved);
+      }
+
+      renderAll();
+      const moved_cross = srcDayId !== tgtDayId;
+      toast(moved_cross ? '团队已跨日期移动，记得保存' : '团队顺序已调整，记得保存', 'info');
+    });
+  });
+
+  /* ── team-grid as drop zone (catches drops on empty grid / grid gap) ── */
+  document.querySelectorAll('.team-grid').forEach(grid => {
+    grid.addEventListener('dragover', e => {
+      if (!_teamDragSrc) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      grid.classList.add('grid-drag-over');
+    });
+    grid.addEventListener('dragleave', e => {
+      if (!grid.contains(e.relatedTarget))
+        grid.classList.remove('grid-drag-over');
+    });
+    grid.addEventListener('drop', e => {
+      // Let card-level handler take precedence; only handle if target is the grid itself
+      const raw = e.dataTransfer.getData('text/team');
+      if (!raw) return;
+      const [srcId, srcDayId] = raw.split('|');
+      const tgtDayId = grid.dataset.dayid;
+      if (srcId && srcDayId) {
+        e.preventDefault();
+        collectDesktop();
+        const srcDay = DB.days.find(d => d.id === srcDayId);
+        if (!srcDay) return;
+        const si = srcDay.teams.findIndex(t => t.id === srcId);
+        if (si < 0) return;
+        const [moved] = srcDay.teams.splice(si, 1);
+        const tgtDay = DB.days.find(d => d.id === tgtDayId);
+        if (tgtDay) tgtDay.teams.push(moved);
+        renderAll();
+        const moved_cross = srcDayId !== tgtDayId;
+        toast(moved_cross ? '团队已跨日期移动，记得保存' : '团队顺序已调整，记得保存', 'info');
+      }
+    });
+  });
+}
+
+
+
+/* ══════════════════════════════════════════════
+   MOBILE: Show team edit button
+══════════════════════════════════════════════ */
+function applyMobileTeamEditBtns() {
+  document.querySelectorAll('.m-team-edit').forEach(el => {
+    el.style.display = _isMobile() ? 'block' : 'none';
+  });
+}
+window.addEventListener('resize', applyMobileTeamEditBtns);
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+(async ()=>{
+  await loadData(false);
+  applyMobileTeamEditBtns();
+
+  // 标题实时监听：输入即同步 DB + 浏览器标签 + 打印标题
+  const titleMain = document.getElementById('titleMain');
+  const titleSub  = document.getElementById('titleSub');
+  function syncTitle() {
+    DB.title    = titleMain.innerText.trim() || DB.title;
+    DB.subtitle = titleSub.innerText.trim()  || DB.subtitle;
+    document.title = DB.title;
+    const ph = document.getElementById('printHeader');
+    if (ph) ph.textContent = DB.title + ' · ' + DB.subtitle;
+  }
+  titleMain.addEventListener('input', syncTitle);
+  titleSub.addEventListener('input',  syncTitle);
+  // 回车不换行；失焦时提示保存
+  [titleMain, titleSub].forEach(el => {
+    el.addEventListener('keydown', e => { if (e.key==='Enter') { e.preventDefault(); el.blur(); } });
+    el.addEventListener('blur', () => { syncTitle(); toast('标题已更新，记得点保存同步给所有人','info'); });
+  });
+})();
+</script>
+</body>
+</html>
