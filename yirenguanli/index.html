@@ -563,6 +563,13 @@ a{color:inherit;text-decoration:none}
 @media(max-width:768px){.fab{display:flex}}
 
 /* ═══════════════════════════════════════════
+   TRANSFER ROW DRAG
+═══════════════════════════════════════════ */
+.tbl tr.is-dragging td { opacity: 0.35; background: rgba(201,168,76,0.05); transition: opacity 0.1s; }
+.tbl tr.drag-over-top td { border-top: 2px solid var(--gold) !important; }
+.tbl tr.drag-over-bottom td { border-bottom: 2px solid var(--gold) !important; }
+
+/* ═══════════════════════════════════════════
    PRINT / PDF
 ═══════════════════════════════════════════ */
 @media print{
@@ -837,6 +844,7 @@ a{color:inherit;text-decoration:none}
   border-color: rgba(201,168,76,0.55) !important;
 }
 </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -1152,7 +1160,10 @@ function renderTbl(day) {
     </span>
   </td>
   <td><span data-f="remarks" data-d="${day.id}" data-r="${t.id}" data-t="tr" contenteditable="true" spellcheck="false" data-ph="备注">${esc(t.remarks)}</span></td>
-  <td><button class="btn-icon" onclick="askDelete('删除此接送记录？',()=>deleteTransfer('${day.id}','${t.id}'))">✕</button></td>
+  <td style="white-space:nowrap">
+    <button class="drag-handle drag-handle-sm" data-drag="transfer" data-dayid="${day.id}" data-id="${t.id}" title="按住拖动调整顺序">⠿</button>
+    <button class="btn-icon" onclick="askDelete('删除此接送记录？',()=>deleteTransfer('${day.id}','${t.id}'))">✕</button>
+  </td>
 </tr>`).join('');
 
   return `<div class="tbl-wrap"><table class="tbl">
@@ -1160,7 +1171,7 @@ function renderTbl(day) {
     <th>时间</th><th>艺人/团队</th><th>类型</th><th>行程</th>
     <th>车辆</th><th>乘车人</th><th>车牌</th><th>司机/电话</th><th>备注</th><th style="width:30px"></th>
   </tr></thead>
-  <tbody>${rows||`<tr><td colspan="10" class="empty">暂无接送记录</td></tr>`}</tbody>
+  <tbody>${rows||`<tr class="empty-row"><td colspan="10" class="empty">暂无接送记录</td></tr>`}</tbody>
 </table></div>`;
 }
 
